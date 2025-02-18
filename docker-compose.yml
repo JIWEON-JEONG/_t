@@ -1,0 +1,14 @@
+services:
+  mysql:
+    image: mysql:8.0.28
+    container_name: nota_assignment_mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: nota_assignment
+      TZ: Asia/Seoul
+    platform: linux/x86_64
+    restart: always
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d  # DDL 스크립트 마운트
