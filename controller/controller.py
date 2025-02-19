@@ -45,9 +45,20 @@ def get_application_service(user_service: UserService = Depends(get_user_service
 
 router = APIRouter()
 
-@router.get("/")
+@router.get("/health")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "success"}
+
+@router.get("user/verify")
+async def root():
+    return {"message": "success"}
+
+@router.get("/user/{user_id}", response_model=UserResponseDto)
+def read_user(user_id: int, application_service: ApplicationService = Depends(get_application_service)):
+    user = User()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
 # @router.get("/user/{user_id}", response_model=UserResponseDto)
 # def read_user(user_id: int, application_service: ApplicationService = Depends(get_application_service)):

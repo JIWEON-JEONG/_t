@@ -11,3 +11,15 @@ class EmailVerificationRepositoryPort(ABC):
     @abstractmethod
     def insert(self, db: Session, entity: EmailVerification) -> None:
         pass    
+
+    @abstractmethod
+    def exist_verification_code(self, db: Session, email: str) -> bool:
+        pass    
+
+    @abstractmethod
+    def is_verified_email(self, db: Session, email: str) -> bool:
+        pass
+
+    @abstractmethod
+    def success(self, db: Session, email: str, code: str) -> None:
+        pass     
