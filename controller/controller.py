@@ -1,7 +1,7 @@
 from application.email_sender import EmailSender
 from dto.dto import SignUpRequest
 from fastapi import APIRouter, HTTPException, Depends
-from application.application_service import ApplicationService
+from application.user_application_service import ApplicationService
 from domain.service.email_verification_service import EmailVerificationService
 from common.security_service import SecurityService
 from domain.entity.port.user_repository_port import UserRepositoryPort

@@ -9,5 +9,13 @@ class UserRepositoryPort(ABC):
         pass
 
     @abstractmethod
+    def exist_by_id(self, db: Session, id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def update_password(self, db: Session, id: int, password: str) -> bool:
+        pass
+
+    @abstractmethod
     def save(self, db: Session, user: User) -> User:
         pass

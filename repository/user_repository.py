@@ -14,3 +14,18 @@ class UserRepository(UserRepositoryPort):
         db.add(user)
         db.flush()
         return user
+    
+    def exist_by_id(self, db: Session, id: int) -> bool:
+        result = db.query(User.id)\
+            .filter(User.id == id)\
+            .limit(1)\
+            .first()
+    
+        return result is not None  
+    
+    def update_password(self, db: Session, id: int, password: str) -> None:
+        db.query(User)\
+            .filter(User.id == id)\
+            .update({"password": password}, synchronize_session=False)
+        
+        db.flush()
