@@ -8,9 +8,10 @@ class UserSessionRepository(UserSessionRepositoryPort):
     def __init__(self):
         pass
 
-    def get_by_id(self, db: Session, id: str) -> Optional[UserSession]:
+    def get_active_by_id(self, db: Session, id: str) -> Optional[UserSession]:
         return db.query(UserSession)\
             .filter(UserSession.id == id)\
+            .filter(UserSession.is_active == True)\
             .first()
     
     def in_activate_by_id(self, db: Session, id: str) -> None:

@@ -1,19 +1,35 @@
 from pydantic import BaseModel, field_validator, EmailStr
 from datetime import datetime
 
+from domain.entity.enum import ProjectRole
+
 class CreateUserRequest(BaseModel):
     company_id: int
     email: EmailStr
     password: str
 
+class UserSessionDto(BaseModel):
+    session_id: str
+    ip: str
+
 class UpdateUserPasswordRequest(BaseModel):
     before_password: str
     update_password: str
 
-class LoginRequest(BaseModel):
-    email: EmailStr
-    password: str
-    ip: str
+class CreateProjectRequest(BaseModel):
+    description: str
+
+class UpdateProjectRequest(BaseModel):
+    project_id: int
+    description: str
+
+class InviteProjectRequest(BaseModel):
+    project_id: int
+    member_id: int
+    member_role: ProjectRole
+
+class DeleteProjectRequest(BaseModel):
+    project_id: int
 
 class VerifyEmailRequest(BaseModel):
     email: EmailStr

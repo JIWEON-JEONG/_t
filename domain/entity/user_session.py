@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 from sqlalchemy import Boolean, Column, Integer, String, DateTime
 from sqlalchemy.orm import DeclarativeBase
 
@@ -14,7 +14,8 @@ class UserSession(Base):
     user_id = Column(Integer, nullable=False)
     ip = Column(String, nullable=False)  
     created_at = Column(DateTime, default=utc_now)  
-    expires_at = Column(DateTime, default=lambda: utc_now() + timedelta(hours=3))  
+    expires_at = Column(DateTime, default=lambda: utc_now() + timedelta(hours=3))
+    # 세션 사용할때, 비동기로 업데이트. 추후 redis 로 최적화.  
     last_active = Column(DateTime, default=utc_now)  
     is_active = Column(Boolean, default=True) 
 

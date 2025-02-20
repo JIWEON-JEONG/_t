@@ -1,6 +1,8 @@
 import datetime
 import logging
 from typing import Optional
+
+from fastapi import HTTPException
 from common.security_service import SecurityService
 from domain.entity.port.user_session_repository_port import UserSessionRepositoryPort
 from sqlalchemy.orm import Session
@@ -11,7 +13,14 @@ class UserSessionService:
     def __init__(self, session_repository_port: UserSessionRepositoryPort, security_service: SecurityService):
         self.session_repository_port = session_repository_port
         self.security_service = security_service
-        self.logger = logging.getLogger(__name__)        
+        self.logger = logging.getLogger(__name__)
+
+    def verify_session_by_id_or_throw(self, db: Session, id: str, ip: str) -> UserSession:
+        session: Optional[UserSession] = self.session_repository_port.get_active_by_id(db, id)
+        if not self.is_valid_session(session, ip):
+            raise HTTPException(status_code= 401, detail=f"사용자 세션이 만료되었습니다. 다시 로그인해주세요.")
+
+        return session      
 
     def get_valid_session(self, db: Session, user_id: int, ip: str) -> str:
         session: Optional[UserSession] = self.session_repository_port.get_active_by_user_id(db, user_id)

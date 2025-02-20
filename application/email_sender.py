@@ -12,8 +12,8 @@ class EmailSender:
     def __init__(self):
         self.smtp_server = "smtp.gmail.com"
         self.smtp_port = 587  
-        self.sender_email = "seoltabtutor@onuii.com"
-        self.sender_password = "qhjy qfsg afkm eghk"  # 앱 비밀번호 사용 권장
+        self.sender_email = "richard@onuii.com"
+        self.sender_password = "rwel cqgv moxl xnpk"
 
     async def send_email(self, param: CommonSendEmailDto):
         message = EmailMessage()

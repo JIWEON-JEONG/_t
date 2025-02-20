@@ -5,7 +5,7 @@ from domain.entity.user_session import UserSession
 
 class UserSessionRepositoryPort(ABC):
     @abstractmethod
-    def get_by_id(self, db: Session, id: str) -> Optional[UserSession]:
+    def get_active_by_id(self, db: Session, id: str) -> Optional[UserSession]:
         pass
 
     @abstractmethod
