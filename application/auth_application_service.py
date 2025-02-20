@@ -2,17 +2,27 @@ import datetime
 from application.email_sender import CommonSendEmailDto, EmailSender
 from common.security_service import SecurityService
 from common.transaction import transactional
-from common.random_util import RandomUtil
+from domain.entity.user import User
 from domain.service.user_service import UserService
 from domain.service.email_verification_service import EmailVerificationService
+from domain.service.user_session_service import UserSessionService
+from dto.dto import LoginRequest
 
 class AuthApplicationService:
     def __init__(self, user_service: UserService, email_verification_service: EmailVerificationService, 
-                email_sender: EmailSender, security_service: SecurityService):
+                user_session_service: UserSessionService, security_service: SecurityService,
+                email_sender: EmailSender):
         self.user_service = user_service
         self.email_verification_service = email_verification_service
         self.email_sender = email_sender
         self.security_service = security_service
+        self.user_session_service = user_session_service
+
+    @transactional
+    async def login(self, param: LoginRequest, db=None) -> str:
+        user: User = self.user_service.get_user_by_email_password_or_throw(db, param.email, param.password)
+        return await self.user_session_service.get_valid_session(db, user.id, param.ip)
+        
 
     @transactional
     async def authenticate_email(self, email:str, db=None) -> None:
@@ -20,7 +30,7 @@ class AuthApplicationService:
         if already_exist:
             raise Exception(f"이미 '{email}'에 대한 인증 코드가 발급되어 있습니다. 기존 코드를 확인해주세요.")
 
-        code = RandomUtil.generate_random_code()
+        code = self.security_service.generate_random_code()
         self.email_verification_service.record(db, email, code)
         self.email_sender.send_email(CommonSendEmailDto(recipient_email=email, body= {"code": code}))
     
@@ -28,8 +38,7 @@ class AuthApplicationService:
     async def verify_email(self, email: str, code: str, db=None) -> None:
         self.email_verification_service.success_verification(db, email, code)
 
-    @transactional
-    async def send_email_update_password(self, user_id: int, email: str, db=None) -> None:
+    async def send_email_update_password(self, user_id: int, email: str) -> None:
         body: dict = {
             "user_id" : user_id,
         }

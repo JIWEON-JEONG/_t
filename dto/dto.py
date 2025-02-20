@@ -2,6 +2,7 @@ from pydantic import BaseModel, field_validator, EmailStr
 from datetime import datetime
 
 class CreateUserRequest(BaseModel):
+    company_id: int
     email: EmailStr
     password: str
 
@@ -12,6 +13,7 @@ class UpdateUserPasswordRequest(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+    ip: str
 
 class VerifyEmailRequest(BaseModel):
     email: EmailStr

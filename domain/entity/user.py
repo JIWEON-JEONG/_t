@@ -8,20 +8,19 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    company_id = Column(Integer, nullable=False)
     # Unique
     email = Column(String(50), nullable=False, unique= True)
     password = Column(String(255), nullable=False)
-    created_at = Column(DateTime, default=datetime.now)
+    created_at = Column(DateTime, default=datetime.now(UTC))
     updated_at = Column(DateTime, default=datetime.now(UTC), onupdate= datetime.now(UTC))
 
     @staticmethod
-    def create(email: str, password: str) -> 'User':
+    def create(company_id: int, email: str, password: str) -> 'User':
         return User(
+            company_id = company_id,
             email=email,
             password=password,
         )
-    
-    def __repr__(self):
-        return f"<User(id={self.id}, name={self.name}, created_at={self.created_at}, updated_at={self.updated_at})>"
 
 

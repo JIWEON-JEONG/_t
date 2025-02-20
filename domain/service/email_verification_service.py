@@ -1,5 +1,5 @@
 from domain.entity.email_verification import EmailVerification, CreateEmailVerificationDto
-from domain.entity.port.email_verification_repository_port import EmailVerificationRepositoryPort
+from domain.entity.port.user_session_repository_port import EmailVerificationRepositoryPort
 from sqlalchemy.orm import Session
 
 class EmailVerificationService:

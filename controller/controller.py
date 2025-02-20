@@ -5,7 +5,7 @@ from application.user_application_service import ApplicationService
 from domain.service.email_verification_service import EmailVerificationService
 from common.security_service import SecurityService
 from domain.entity.port.user_repository_port import UserRepositoryPort
-from domain.entity.port.email_verification_repository_port import EmailVerificationRepositoryPort
+from domain.entity.port.user_session_repository_port import EmailVerificationRepositoryPort
 from domain.service.user_service import UserService
 from domain.service.email_verification_service import EmailVerificationService
 from repository.user_repository import UserRepository
@@ -53,12 +53,12 @@ async def root():
 async def root():
     return {"message": "success"}
 
-@router.get("/user/{user_id}", response_model=UserResponseDto)
-def read_user(user_id: int, application_service: ApplicationService = Depends(get_application_service)):
-    user = User()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+# @router.get("/user/{user_id}", response_model=UserResponseDto)
+# def read_user(user_id: int, application_service: ApplicationService = Depends(get_application_service)):
+#     user = User()
+#     if not user:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     return user
 
 # @router.get("/user/{user_id}", response_model=UserResponseDto)
 # def read_user(user_id: int, application_service: ApplicationService = Depends(get_application_service)):

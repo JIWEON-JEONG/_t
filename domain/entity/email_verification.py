@@ -18,7 +18,7 @@ class EmailVerification(Base):
     code = Column(String(), nullable=False)
     retry_count = Column(Integer, nullable=False, default=0)
     success = Column(Boolean, nullable=False, default=False)
-    created_at = Column(DateTime, default=datetime.now)
+    created_at = Column(DateTime, default=datetime.now(UTC))
     updated_at = Column(DateTime, default=datetime.now(UTC), onupdate= datetime.now(UTC))
 
     @staticmethod

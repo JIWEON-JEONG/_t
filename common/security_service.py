@@ -1,3 +1,6 @@
+import hashlib
+import os
+import secrets
 import jwt
 import datetime
 from passlib.context import CryptContext
@@ -30,3 +33,9 @@ class SecurityService:
             raise ValueError("토큰이 만료되었습니다.")
         except jwt.InvalidTokenError:
             raise ValueError("유효하지 않은 토큰입니다.")
+    
+    def generate_random_code(length: int = 12) -> str:
+        return secrets.token_hex(length)  
+    
+    def generate_session_id() -> str:
+        return hashlib.sha256(os.urandom(64)).hexdigest()  # 64자리

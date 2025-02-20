@@ -19,3 +19,9 @@ class UserRepositoryPort(ABC):
     @abstractmethod
     def save(self, db: Session, user: User) -> User:
         pass
+
+    @abstractmethod
+    def get_by_email(self, db: Session, email: str) -> Optional[User]:
+        pass
+
+
