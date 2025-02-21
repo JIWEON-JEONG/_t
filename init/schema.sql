@@ -82,20 +82,3 @@ CREATE TABLE IF NOT EXISTS `user_session` (
   PRIMARY KEY (`id`),
   KEY `user_UNIQUE_session` (`user_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-
-INSERT INTO `company` (name)
-VALUES 
-  ('CompanyA')
-
-INSERT INTO `user` (name, role, email, company_id, password) 
-VALUES 
-  ('TestMember', 'MEMBER', 'testmember@example.com', 1, "$2b$12$vGBP2FaDluPJfKYlJuPaAe8xVnW9waTuPWp.wKKnyt9/F1niDh1IG"), 
-  ('TestAdmin', 'ADMIN', 'testadmin@example.com', 1, "$2b$12$vGBP2FaDluPJfKYlJuPaAe8xVnW9waTuPWp.wKKnyt9/F1niDh1IG"), 
-  ('TestProjectOwner', 'PROJECT_OWNER', 'testprojectowner@example.com', 1, "$2b$12$vGBP2FaDluPJfKYlJuPaAe8xVnW9waTuPWp.wKKnyt9/F1niDh1IG"), 
-
-INSERT INTO `email_verification` (email, code, retry_count, success) 
-VALUES 
-  ('testmember@example.com', 'code1', 1, 1), 
-  ('testadmin@example.com', 'code2', 1, 1), 
-  ('testprojectowner@example.com', 'code3', 1, 1);
