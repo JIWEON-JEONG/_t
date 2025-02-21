@@ -23,7 +23,7 @@ class UserApplicationService:
     @transactional
     async def update_password(self, user_id: int, param: UpdateUserPasswordRequest, db=Session) -> int:
         user: User =self.user_service.get_user_by_id_or_throw(db, user_id)
-        self.user_service.update_password(db, user.id, param.before_password, param.update_password)
+        self.user_service.update_password(db, user, param.before_password, param.update_password)
         return user.id
 
     

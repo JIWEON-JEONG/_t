@@ -36,25 +36,17 @@ class CreateProjectRequest(BaseModel):
     description: str
 
 class UpdateProjectRequest(BaseModel):
-    project_id: int
     description: str
 
 class InviteProjectRequest(BaseModel):
-    project_id: int
     member_id: int
     member_role: ProjectRole
 
-class DeleteProjectRequest(BaseModel):
-    project_id: int
-
-class UserResponseDto(BaseModel):
+class ProjectResponseDto(BaseModel):
     id: int
-    name: str
-    created_at: str
-    updated_at: str
-
-    @field_validator('created_at', 'updated_at')
-    def convert_datetime_to_str(cls, v):
-        if isinstance(v, datetime):
-            return v.isoformat()
-        return v
+    company_id: int
+    owner_id: int
+    description: str
+    is_deleted: bool
+    created_at: datetime
+    updated_at: datetime

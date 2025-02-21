@@ -19,6 +19,8 @@ class SecurityService:
         return self.context.hash(password)
 
     def verify(self, password: str, hashed_password: str) -> bool:
+        print(f"Hashed Password: {hashed_password}")
+        print(f"Password Verified: {password}")
         return self.context.verify(password, hashed_password)
 
     def generate_token(self, data: dict, expires_at: datetime.datetime) -> str:

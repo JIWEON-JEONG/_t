@@ -12,11 +12,12 @@ def get_db():
 def transactional(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
-        db: Session = kwargs.get('db')  # db 세션을 받아옵니다.
+        # db가 kwargs에 이미 있으면 그 값을 사용
+        db: Session = kwargs.get('db')
 
         try:
-            # db 세션을 함수에 전달하여 실행
-            result = await func(*args, **kwargs, db=db)  
+            # db를 함수에 전달하여 실행
+            result = await func(*args, **kwargs)  
             db.commit()  # 트랜잭션 커밋
             return result
         except Exception as e:
@@ -28,3 +29,4 @@ def transactional(func):
                 db.close()
 
     return wrapper
+

@@ -35,12 +35,12 @@ class UserService:
         user = User.create(company_id, email, hashed_password)
         return self.user_repository.save(db, user)
     
-    def update_password(self, db: Session, id: int, before_password: str, update_password: str) -> None:
-        verified: bool = self.security_service.verify(before_password, update_password)
+    def update_password(self, db: Session, user: User, before_password: str, update_password: str) -> None:
+        verified: bool = self.security_service.verify(before_password, user.password)
         if not verified:
             raise HTTPException(status_code= 400, detail=f"비밀번호가 올바르지 않습니다.")
         hashed_password = self.security_service.hash(update_password) 
-        return self.user_repository.update_password(db, id, hashed_password)
+        return self.user_repository.update_password(db, user.id, hashed_password)
     
     def get_user_by_id_or_throw(self, db: Session, id: int) -> User:
         user: Optional[User] = self.user_repository.get_by_id(db, id)

@@ -5,10 +5,11 @@ from common.transaction import get_db
 from domain.entity.port.email_verification_repository_port import EmailVerificationRepositoryPort
 from domain.entity.port.project_repository_port import ProjectRepositoryPort
 from domain.entity.port.user_session_repository_port import UserSessionRepositoryPort
+from domain.entity.project import Project
 from domain.entity.user import User
 from domain.service.project_service import ProjectService
 from domain.service.user_session_service import UserSessionService
-from dto.dto import CreateUserRequest, LoginRequest, SendEmailRequest, UpdateUserPasswordRequest, VerifyEmailRequest
+from dto.dto import CreateProjectRequest, CreateUserRequest, InviteProjectRequest, LoginRequest, ProjectResponseDto, SendEmailRequest, UpdateProjectRequest, UpdateUserPasswordRequest, VerifyEmailRequest
 from fastapi import APIRouter, BackgroundTasks, Depends, Request, Response
 from sqlalchemy.orm import Session
 from application.user_application_service import UserApplicationService
@@ -76,9 +77,8 @@ def get_user_application_service(user_service: UserService = Depends(get_user_se
     ) -> UserApplicationService:
     return UserApplicationService(user_service, email_verification_service) 
 
-def get_project_application_service(user_service: UserService = Depends(get_user_service),
-    project_service: ProjectService = Depends(get_project_service)) -> ProjectApplicationService:
-    return ProjectApplicationService(user_service, project_service) 
+def get_project_application_service(project_service: ProjectService = Depends(get_project_service)) -> ProjectApplicationService:
+    return ProjectApplicationService(project_service) 
 
 router = APIRouter()
 
@@ -166,16 +166,87 @@ async def create_user(
     user_id = await user_application_service.create_user(request, db=db)
     return {"message": user_id}
 
-# @router.get("/user/{user_id}", response_model=UserResponseDto)
-# def read_user(user_id: int, application_service: ApplicationService = Depends(get_application_service)):
-#     user = User()
-#     if not user:
-#         raise HTTsPException(status_code=404, detail="User not found")
-#     return user
+@router.post("/project", summary="프로젝트 생성", description="프로젝트를 생성합니다.")
+async def create_project(
+    client_request: Request,
+    request: CreateProjectRequest,
+    auth_application_service: AuthApplicationService = Depends(get_auth_application_service),
+    project_application_service: ProjectApplicationService = Depends(get_project_application_service),
+    db: Session = Depends(get_db)  # DB 세션 주입
+):
+    session_id = client_request.cookies.get("session_id")
+    client_ip: str = client_request.headers.get('X-Forwarded-For', client_request.client.host).split(',')[0]
+    user: User = auth_application_service.get_user_by_session(db, session_id, client_ip)
 
-# @router.get("/user/{user_id}", response_model=UserResponseDto)
-# def read_user(user_id: int, application_service: ApplicationService = Depends(get_application_service)):
-#     user = User()
-#     if not user:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     return user
+    project_id = await project_application_service.create(user, request, db=db)
+    return {"message": project_id}
+
+@router.patch("/project/{project_id}", summary="프로젝트 수정", description="프로젝트를 수정합니다.")
+async def update_project(
+    client_request: Request,
+    project_id: int,
+    request: UpdateProjectRequest,
+    auth_application_service: AuthApplicationService = Depends(get_auth_application_service),
+    project_application_service: ProjectApplicationService = Depends(get_project_application_service),
+    db: Session = Depends(get_db)  # DB 세션 주입
+):
+    session_id = client_request.cookies.get("session_id")
+    client_ip: str = client_request.headers.get('X-Forwarded-For', client_request.client.host).split(',')[0]
+    user: User = auth_application_service.get_user_by_session(db, session_id, client_ip)
+
+    project_id = await project_application_service.update(user, project_id, request, db=db)
+    return {"message": project_id}
+
+@router.get("/project/{project_id}", summary="프로젝트 조회", description="프로젝트를 조회합니다.")
+async def read_project(
+    client_request: Request,
+    project_id: int,
+    auth_application_service: AuthApplicationService = Depends(get_auth_application_service),
+    project_application_service: ProjectApplicationService = Depends(get_project_application_service),
+    db: Session = Depends(get_db)) -> ProjectResponseDto: 
+
+    session_id = client_request.cookies.get("session_id")
+    client_ip: str = client_request.headers.get('X-Forwarded-For', client_request.client.host).split(',')[0]
+    user: User = auth_application_service.get_user_by_session(db, session_id, client_ip)
+
+    project: Project = await project_application_service.read(user, project_id, db=db)
+    return ProjectResponseDto(
+        id=project.id,
+        company_id=project.company_id,
+        owner_id=project.owner_id,
+        description=project.description,
+        is_deleted=project.is_deleted,
+        created_at=project.created_at,
+        updated_at=project.updated_at
+    )
+
+@router.post("/project/{project_id}/member", summary="프로젝트 멤버 초대", description="프로젝트에 멤버를 초대합니다.")
+async def invite_project(
+    client_request: Request,
+    project_id: int,
+    request: InviteProjectRequest,
+    auth_application_service: AuthApplicationService = Depends(get_auth_application_service),
+    project_application_service: ProjectApplicationService = Depends(get_project_application_service),
+    db: Session = Depends(get_db)  # DB 세션 주입
+):
+    session_id = client_request.cookies.get("session_id")
+    client_ip: str = client_request.headers.get('X-Forwarded-For', client_request.client.host).split(',')[0]
+    user: User = auth_application_service.get_user_by_session(db, session_id, client_ip)
+
+    project_id = await project_application_service.invite(user, project_id, request, db=db)
+    return {"message": project_id}
+
+@router.delete("/project/{project_id}", summary="프로젝트 삭제", description="프로젝트를 삭제합니다.")
+async def delete_project(
+    client_request: Request,
+    project_id: int,
+    auth_application_service: AuthApplicationService = Depends(get_auth_application_service),
+    project_application_service: ProjectApplicationService = Depends(get_project_application_service),
+    db: Session = Depends(get_db)  # DB 세션 주입
+):
+    session_id = client_request.cookies.get("session_id")
+    client_ip: str = client_request.headers.get('X-Forwarded-For', client_request.client.host).split(',')[0]
+    user: User = auth_application_service.get_user_by_session(db, session_id, client_ip)
+
+    project_id = await project_application_service.delete(user, project_id, db=db)
+    return {"message": project_id}
