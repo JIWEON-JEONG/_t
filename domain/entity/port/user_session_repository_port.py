@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 from sqlalchemy.orm import Session
-from domain.entity.user_session import UserSession  
+from domain.entity.user_session import UserSession
 
 class UserSessionRepositoryPort(ABC):
     @abstractmethod

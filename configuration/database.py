@@ -5,4 +5,3 @@ SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:password@localhost:3306/nota_ass
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-

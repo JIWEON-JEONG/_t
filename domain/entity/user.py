@@ -23,7 +23,7 @@ class User(Base):
         return User(
             company_id = company_id,
             email=email,
-            role=UserRole.VIEWER,
+            role=UserRole.MEMBER,
             password=password,
         )
 

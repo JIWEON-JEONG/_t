@@ -1,9 +1,8 @@
 from datetime import datetime, UTC
-from enum import Enum
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Enum, Integer, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
-from domain.entity.enum import ROLE_PERMISSIONS, ProjectRole
+from domain.entity.enum import ProjectRole
 
 Base = declarative_base()
 
@@ -26,10 +25,5 @@ class ProjectUserRole(Base):
             role=role,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
-        )
-
-    @staticmethod
-    def can_perform_action(role: ProjectRole, action: str) -> bool:
-        """해당 역할(role)이 특정 액션(action)을 수행할 수 있는지 확인"""
-        return action.upper() in ROLE_PERMISSIONS.get(role, set())  
+        ) 
 

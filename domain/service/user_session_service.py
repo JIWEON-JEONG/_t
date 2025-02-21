@@ -34,15 +34,15 @@ class UserSessionService:
         """세션이 유효한지 검사"""
         if session is None:
             return False
-        if self.is_expired(session, utc_now()):
+        if self._is_expired(session):
             return False
-        if self.is_ip_changed(session, ip):
+        if self._is_ip_changed(session, ip):
             return False
         return True
 
-    def _is_expired(self, session: UserSession, now: datetime) -> bool:
-        """세션이 만료되었는지 확인"""
-        return session.expires_at <= now
+    def _is_expired(self, session: UserSession) -> bool:
+        expires_at = session.expires_at.replace(tzinfo=datetime.timezone.utc)
+        return expires_at <= utc_now()
 
     def _is_ip_changed(self, session: UserSession, ip: str) -> bool:
         """IP가 변경되었는지 확인"""
@@ -52,7 +52,7 @@ class UserSessionService:
         """기존 세션을 비활성화하고 새 세션을 생성"""
         if session:
             self.session_repository_port.in_activate_by_id(db, session.id)
-            if self.is_ip_changed(session, ip):
+            if self._is_ip_changed(session, ip):
                 self.logger.warning(f"IP 변경 감지: user_id={user_id}, old_ip={session.ip}, new_ip={ip}")
 
         session_id = self.security_service.generate_session_id()

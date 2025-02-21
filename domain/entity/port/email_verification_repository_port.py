@@ -21,5 +21,17 @@ class EmailVerificationRepositoryPort(ABC):
         pass
 
     @abstractmethod
-    def success(self, db: Session, email: str, code: str) -> None:
-        pass     
+    def success_by_email_and_code(self, db: Session, email: str, code: str, retry_count: int) -> None:
+        pass
+    
+    @abstractmethod
+    def success(self, db: Session, id: int, retry_count: int) -> None:
+        pass
+
+    @abstractmethod
+    def fail(self, db: Session, id: int) -> None:
+        pass          
+
+    @abstractmethod
+    def get_by_email(self, db: Session, email: str) -> Optional[EmailVerification]:
+        pass

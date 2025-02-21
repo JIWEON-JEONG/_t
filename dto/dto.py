@@ -3,18 +3,34 @@ from datetime import datetime
 
 from domain.entity.enum import ProjectRole
 
+class SendEmailRequest(BaseModel):
+    email: EmailStr
+
+class VerifyEmailRequest(BaseModel):
+    email: EmailStr
+    code: str
+
 class CreateUserRequest(BaseModel):
     company_id: int
     email: EmailStr
     password: str
 
+class TokenPayload(BaseModel):
+    body: dict
+    exp: datetime
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+class UpdateUserPasswordRequest(BaseModel):
+    token: str
+    update_password: str
+    before_password: str  
+
 class UserSessionDto(BaseModel):
     session_id: str
     ip: str
-
-class UpdateUserPasswordRequest(BaseModel):
-    before_password: str
-    update_password: str
 
 class CreateProjectRequest(BaseModel):
     description: str
@@ -30,15 +46,6 @@ class InviteProjectRequest(BaseModel):
 
 class DeleteProjectRequest(BaseModel):
     project_id: int
-
-class VerifyEmailRequest(BaseModel):
-    email: EmailStr
-    verification_code: str
-
-class PasswordResetRequest(BaseModel):
-    email: EmailStr
-    new_password: str
-    reset_code: str  # 이메일로 발송된 재설정 코드를 입력받음
 
 class UserResponseDto(BaseModel):
     id: int
