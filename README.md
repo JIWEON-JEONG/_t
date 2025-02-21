@@ -8,4 +8,5 @@
 7. pip install -r requirements.txt
 8. uvicorn main:app --reload --proxy-headers
 
-
+## API 스펙 및 E2E 테스트 가능 링크 
+http://localhost:8000/docs
