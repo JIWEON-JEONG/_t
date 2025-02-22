@@ -187,7 +187,7 @@ def test_프로젝트_역할이_VIEWER_역할_사용자는_프로젝트를_수�
     assert "권한이 없습니다." in exc_info.value.detail
 
 
-def test_업데이트_실패_이미삭제(project_service, mock_admin, mock_db):
+def test_업데이트_실패_할_경우_예외를_발생시킨다(project_service, mock_admin, mock_db):
     project_service.project_repository_port.get_role_by_project_and_user.return_value = None
     project_service.project_repository_port.update_project_description.return_value = False
 
