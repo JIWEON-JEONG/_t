@@ -21,6 +21,7 @@ class ProjectService:
         user_project_role: ProjectUserRole = self.project_repository_port.get_role_by_project_and_user(db, project_id, user.id)
         if(not self.check_invite_permission(user.role, user_project_role)):
             self.logger.warning(f"[프로젝트 초대 실패] 사용자 {user.id}가 권한 없이 프로젝트 초대 시도")
+            raise HTTPException(status_code= 403, detail=f"권한이 없습니다.")
 
         project: Optional[Project] = self.project_repository_port.get_by_id(db, project_id)
         if project is None:
@@ -79,17 +80,20 @@ class ProjectService:
         
         return project
 
-    def check_invite_permission(self, user_role: UserRole, project_role: Optional[ProjectRole]) -> bool:
-        return user_role == UserRole.ADMIN or project_role == ProjectRole.OWNER
+    def check_invite_permission(self, user_role: UserRole, project_role: Optional[ProjectUserRole]) -> bool:
+        return user_role == UserRole.ADMIN or (project_role is not None and project_role.role == ProjectRole.OWNER)
        
-    def check_read_permission(self, user_role: UserRole, project_role: Optional[ProjectRole]) -> bool:
-        return user_role == UserRole.ADMIN or project_role in {ProjectRole.OWNER, ProjectRole.EDITOR, ProjectRole.VIEWER}
+    def check_read_permission(self, user_role: UserRole, project_role: Optional[ProjectUserRole]) -> bool:
+        return user_role == UserRole.ADMIN or (project_role is not None  
+                                               and project_role.role in {ProjectRole.OWNER, ProjectRole.EDITOR, ProjectRole.VIEWER})
 
     def check_create_permission(self, user_role: UserRole) -> bool:
         return user_role in {UserRole.ADMIN, UserRole.PROJECT_OWNER}
 
-    def check_update_permission(self, user_role: UserRole, project_role: Optional[ProjectRole]) -> bool:
-        return user_role == UserRole.ADMIN or project_role in {ProjectRole.OWNER, ProjectRole.EDITOR}
+    def check_update_permission(self, user_role: UserRole, project_role: Optional[ProjectUserRole]) -> bool:
+        return user_role == UserRole.ADMIN or (project_role is not None 
+                                               and project_role.role in {ProjectRole.OWNER, ProjectRole.EDITOR})
     
-    def check_delete_permission(self, user_role: UserRole, project_role: Optional[ProjectRole]) -> bool:
-        return user_role == UserRole.ADMIN or project_role == ProjectRole.OWNER
+    def check_delete_permission(self, user_role: UserRole, project_role: Optional[ProjectUserRole]) -> bool:
+        return user_role == UserRole.ADMIN or (project_role is not None and project_role.role == ProjectRole.OWNER)
+
