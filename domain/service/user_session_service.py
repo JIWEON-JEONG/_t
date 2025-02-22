@@ -19,7 +19,7 @@ class UserSessionService:
         session: Optional[UserSession] = self.session_repository_port.get_active_by_id(db, id)
         if not self.is_valid_session(session, ip):
             raise HTTPException(status_code= 401, detail=f"사용자 세션이 만료되었습니다. 다시 로그인해주세요.")
-
+        
         return session      
 
     def get_valid_session(self, db: Session, user_id: int, ip: str) -> str:
