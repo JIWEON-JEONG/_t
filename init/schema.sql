@@ -4,81 +4,87 @@ USE nota_assignment;
 
 -- user 테이블 생성
 CREATE TABLE IF NOT EXISTS `user` (
-    `id` int unsigned NOT NULL AUTO_INCREMENT,
-    `name` varchar(50) NOT NULL,
-    `created_at` timestamp(6) NULL DEFAULT CURRENT_TIMESTAMP(6),
-    `updated_at` timestamp(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-    PRIMARY KEY (`id`)
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `company_id` INT NOT NULL,
+    `email` VARCHAR(50) NOT NULL UNIQUE,
+    `role` ENUM('ADMIN', 'MEMBER', 'PROJECT_OWNER') NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `created_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `updated_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (`id`),
+    -- email에 대한 인덱스를 추가 (이미 UNIQUE 제약이 포함됨)
+    KEY `idx_email` (`email`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- 이메일 인증 테이블 생성
 CREATE TABLE IF NOT EXISTS `email_verification` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `email` varchar(50) NOT NULL,
-  `code` varchar(255) NOT NULL,
-  `retry_count` int NOT NULL DEFAULT '0',
-  `success` tinyint(1) NOT NULL DEFAULT '0',
-  `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  `updated_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  PRIMARY KEY (`id`),
-  KEY `user_email_UNIQUE_email_verification` (`email`) USING BTREE
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `email` VARCHAR(50) NOT NULL,
+    `code` VARCHAR(255) NOT NULL,
+    `retry_count` INT NOT NULL DEFAULT 0,
+    `success` TINYINT(1) NOT NULL DEFAULT 0,
+    `created_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `updated_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (`id`),
+    KEY `user_email_UNIQUE_email_verification` (`email`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 회사 테이블 생성
 CREATE TABLE IF NOT EXISTS `company` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
-  `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  `updated_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  PRIMARY KEY (`id`)
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(50) NOT NULL,
+    `created_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `updated_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 프로젝트 테이블 생성
 CREATE TABLE IF NOT EXISTS `project` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `company_id` int NOT NULL,
-  `owner_id` int NOT NULL,
-  `description` varchar(50) NOT NULL,
-  `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
-  `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  `updated_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  PRIMARY KEY (`id`),
-  KEY `owner_UNIQUE_project` (`owner_id`) USING BTREE
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `company_id` INT NOT NULL,
+    `owner_id` INT NOT NULL,
+    `description` VARCHAR(50) NOT NULL,
+    `is_deleted` TINYINT(1) NOT NULL DEFAULT 0,
+    `created_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `updated_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (`id`),
+    KEY `owner_UNIQUE_project` (`owner_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 프로젝트 사용자 역할 테이블 생성
 CREATE TABLE IF NOT EXISTS `project_user_role` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` int NOT NULL,
-  `user_id` int NOT NULL,
-  `role` enum('OWNER','EDITOR','VIEWER') NOT NULL,
-  `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  `updated_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  PRIMARY KEY (`id`),
-  KEY `idx_project_user` (`project_id`,`user_id`)
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `project_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
+    `role` ENUM('OWNER', 'EDITOR', 'VIEWER') NOT NULL,
+    `created_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `updated_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (`id`),
+    KEY `idx_project_user` (`project_id`, `user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 업무 테이블 생성
 CREATE TABLE IF NOT EXISTS `task` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` int NOT NULL,
-  `manager_id` int NOT NULL,
-  `description` varchar(255) NOT NULL,
-  `is_completed` tinyint(1) NOT NULL DEFAULT '0',
-  `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  `updated_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  PRIMARY KEY (`id`)
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `project_id` INT NOT NULL,
+    `manager_id` INT NOT NULL,
+    `description` VARCHAR(255) NOT NULL,
+    `is_completed` TINYINT(1) NOT NULL DEFAULT 0,
+    `created_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `updated_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 사용자 세션 테이블 생성
 CREATE TABLE IF NOT EXISTS `user_session` (
-  `id` varchar(64) NOT NULL,
-  `user_id` int NOT NULL,
-  `ip` varchar(255) NOT NULL,
-  `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  `expires_at` datetime(6) NOT NULL,
-  `last_active` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`),
-  KEY `user_UNIQUE_session` (`user_id`) USING BTREE
+    `id` VARCHAR(64) NOT NULL,
+    `user_id` INT NOT NULL,
+    `ip` VARCHAR(255) NOT NULL,
+    `created_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `expires_at` DATETIME(6) NOT NULL,
+    `last_active` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+    PRIMARY KEY (`id`),
+    KEY `user_UNIQUE_session` (`user_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
